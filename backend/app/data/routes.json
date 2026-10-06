@@ -1,0 +1,30 @@
+{
+  "_note": "PLACEHOLDER DATA. Stop names and coordinates are approximate and must be replaced with NSU Transportation's official stop list and route shapes (or pulled from the tracking vendor's API).",
+  "routes": [
+    {
+      "id": "campus-loop",
+      "name": "Campus Loop",
+      "color": "#007A53",
+      "is_loop": true,
+      "stops": [
+        {"id": "student-center", "name": "Student Center", "lat": 36.8487, "lng": -76.2609},
+        {"id": "library", "name": "Lyman Beecher Brooks Library", "lat": 36.8478, "lng": -76.2622},
+        {"id": "fine-arts", "name": "E.L. Hamm Fine Arts", "lat": 36.8466, "lng": -76.2636},
+        {"id": "west-campus", "name": "West Campus", "lat": 36.8452, "lng": -76.2668},
+        {"id": "east-campus", "name": "East Campus Housing", "lat": 36.8501, "lng": -76.2575}
+      ]
+    },
+    {
+      "id": "campus-connector",
+      "name": "Campus Connector (NSU - VHS - ODU)",
+      "color": "#F2A900",
+      "is_loop": false,
+      "stops": [
+        {"id": "cc-fine-arts", "name": "E.L. Hamm Fine Arts (NSU)", "lat": 36.8466, "lng": -76.2636},
+        {"id": "cc-library", "name": "Brooks Library (NSU)", "lat": 36.8478, "lng": -76.2622},
+        {"id": "cc-lester", "name": "Lester Hall (VHS)", "lat": 36.8607, "lng": -76.3027},
+        {"id": "cc-perry", "name": "Perry Library / Lot 46 (ODU)", "lat": 36.8862, "lng": -76.3057}
+      ]
+    }
+  ]
+}

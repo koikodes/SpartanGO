@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist/
+ios/
+android/
+.env
+*.db
+__pycache__/
+.venv/
+.pytest_cache/
