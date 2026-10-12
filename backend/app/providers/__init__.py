@@ -11,6 +11,9 @@ def get_provider(routes) -> TrackerProvider:
     if name == "transloc":
         from .transloc import TransLocProvider
         return TransLocProvider(settings.transloc_api_key, settings.transloc_agency_id)
+    if name == "samsara":
+        from .samsara import SamsaraProvider
+        return SamsaraProvider.from_settings(settings)
     if name == "gtfs_rt":
         from .gtfs_rt import GtfsRealtimeProvider
         return GtfsRealtimeProvider.from_settings(settings)

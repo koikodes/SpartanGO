@@ -6,10 +6,15 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class Settings:
-    # Which live-location source to use: "mock" (simulated), "gtfs_rt" (standard feed), or "transloc".
+    # Which live-location source to use: "mock" (simulated), "samsara" (NSU's fleet tracker),
+    # "gtfs_rt" (standard feed), or "transloc".
     tracker_provider: str = os.getenv("TRACKER_PROVIDER", "mock")
     transloc_api_key: str = os.getenv("TRANSLOC_API_KEY", "")
     transloc_agency_id: str = os.getenv("TRANSLOC_AGENCY_ID", "")
+    samsara_api_token: str = os.getenv("SAMSARA_API_TOKEN", "")
+    samsara_tag_ids: str = os.getenv("SAMSARA_TAG_IDS", "")
+    samsara_vehicle_route_map: str = os.getenv("SAMSARA_VEHICLE_ROUTE_MAP", "{}")  # JSON: vehicle id or name -> route id
+    samsara_default_route: str = os.getenv("SAMSARA_DEFAULT_ROUTE", "")
     gtfs_rt_url: str = os.getenv("GTFS_RT_URL", "")
     gtfs_rt_api_key: str = os.getenv("GTFS_RT_API_KEY", "")
     gtfs_rt_api_key_header: str = os.getenv("GTFS_RT_API_KEY_HEADER", "x-api-key")

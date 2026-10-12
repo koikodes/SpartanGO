@@ -54,7 +54,7 @@ Checks before committing: `npm run typecheck` (mobile) and `pytest` (backend).
 
 ## Plugging in NSU's real shuttle tracker
 
-Full guide, including what to ask NSU: [docs/TRACKER_INTEGRATION.md](docs/TRACKER_INTEGRATION.md). If the vendor offers a GTFS-Realtime feed, set `TRACKER_PROVIDER=gtfs_rt` and the feed URL; no code changes.
+NSU's shuttles report to **Samsara**. With a read-only Samsara API token from NSU, set `TRACKER_PROVIDER=samsara` and the token in `.env`; no code changes. Full guide, including what to ask NSU: [docs/TRACKER_INTEGRATION.md](docs/TRACKER_INTEGRATION.md).
 
 Every location source implements one method, `get_vehicles()`, in `backend/app/providers/`. Today `TRACKER_PROVIDER=mock` simulates shuttles driving the routes.
 
