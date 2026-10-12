@@ -44,7 +44,7 @@ export const api = {
   arrivals: (routeId: string, stopId: string) =>
     request<Arrival[]>(`/routes/${encodeURIComponent(routeId)}/stops/${encodeURIComponent(stopId)}/arrivals`),
 
-  signup: (b: { email: string; password: string; name: string; student_id: string }) =>
+  signup: (b: { email: string; password: string; name: string; student_id: string; accepted_terms_version: string }) =>
     post<{ access_token: string; role: Role }>('/auth/signup', b),
   login: (b: { email: string; password: string }) => post<{ access_token: string; role: Role }>('/auth/login', b),
   me: () => request<User>('/me'),

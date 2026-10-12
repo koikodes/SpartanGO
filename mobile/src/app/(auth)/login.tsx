@@ -39,6 +39,10 @@ export default function Login() {
         <Link href="/signup" style={{ color: colors.green, textAlign: 'center', fontWeight: '600' }}>
           New here? Create an account
         </Link>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', gap: space.lg }}>
+          <Link href="/about" style={{ color: colors.muted }}>About the team</Link>
+          <Link href="/terms" style={{ color: colors.muted }}>Terms</Link>
+        </View>
       </Screen>
     </KeyboardAvoidingView>
   );

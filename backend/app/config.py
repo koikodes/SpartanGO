@@ -33,6 +33,9 @@ class Settings:
     # Ride-pass QR codes rotate this often, so a screenshot stops working quickly.
     pass_window_seconds: int = int(os.getenv("PASS_WINDOW_SECONDS", "30"))
 
+    # Must match TERMS_VERSION in mobile/src/content/terms.ts. Bump both when the terms change.
+    terms_version: str = os.getenv("TERMS_VERSION", "2026-10-12")
+
     database_path: str = os.getenv("DATABASE_PATH", "spartango.db")
     avg_shuttle_speed_mps: float = float(os.getenv("AVG_SHUTTLE_SPEED_MPS", "6.7"))  # ~15 mph with stops
 

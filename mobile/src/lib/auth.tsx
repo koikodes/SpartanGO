@@ -10,7 +10,7 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (b: { email: string; password: string; name: string; student_id: string }) => Promise<void>;
+  signUp: (b: { email: string; password: string; name: string; student_id: string; accepted_terms_version: string }) => Promise<void>;
   signOut: () => Promise<void>;
 }
 

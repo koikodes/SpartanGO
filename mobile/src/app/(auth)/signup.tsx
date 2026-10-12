@@ -1,14 +1,16 @@
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, Text } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button, ErrorText, Field, text } from '@/components/ui';
+import { TERMS_VERSION } from '@/content/terms';
 import { useAuth } from '@/lib/auth';
 import { colors, space } from '@/lib/theme';
 
 export default function Signup() {
   const { signUp } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', student_id: '', password: '' });
+  const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -17,7 +19,7 @@ export default function Signup() {
     setBusy(true);
     setError(null);
     try {
-      await signUp({ ...form, email: form.email.trim() });
+      await signUp({ ...form, email: form.email.trim(), accepted_terms_version: TERMS_VERSION });
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not create account');
     } finally {
@@ -25,7 +27,7 @@ export default function Signup() {
     }
   };
 
-  const ready = form.name && form.email && form.student_id && form.password.length >= 8;
+  const ready = form.name && form.email && form.student_id && form.password.length >= 8 && agreed;
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -36,6 +38,21 @@ export default function Signup() {
         <Field label="NSU email" value={form.email} onChangeText={set('email')} autoCapitalize="none" keyboardType="email-address" />
         <Field label="Student ID" value={form.student_id} onChangeText={set('student_id')} autoCapitalize="none" />
         <Field label="Password (8+ characters)" value={form.password} onChangeText={set('password')} secureTextEntry autoComplete="new-password" />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <Pressable
+            onPress={() => setAgreed((a) => !a)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: agreed }}
+            accessibilityLabel="I agree to the Terms and Conditions"
+            hitSlop={8}
+            style={{ width: 26, height: 26, borderRadius: 6, borderWidth: 2, borderColor: colors.green, backgroundColor: agreed ? colors.green : colors.card, alignItems: 'center', justifyContent: 'center' }}>
+            {agreed ? <Text style={{ color: '#fff', fontWeight: '800' }}>✓</Text> : null}
+          </Pressable>
+          <Text style={[text.body, { flex: 1 }]}>
+            I agree to the{' '}
+            <Link href="/terms" style={{ color: colors.green, fontWeight: '600', textDecorationLine: 'underline' }}>Terms and Conditions</Link>
+          </Text>
+        </View>
         <ErrorText>{error}</ErrorText>
         <Button title="Create account" onPress={submit} loading={busy} disabled={!ready} />
         <Link href="/login" style={{ color: colors.green, textAlign: 'center', fontWeight: '600' }}>

@@ -106,12 +106,16 @@ def signup(body: SignupIn):
     domain = body.email.split("@")[1].lower()
     if domain not in settings.allowed_email_domains:
         raise HTTPException(400, "Use your NSU email address")
+    if body.accepted_terms_version != settings.terms_version:
+        raise HTTPException(400, "Please review and accept the current Terms and Conditions")
     with db.connect() as c:
         if c.execute("SELECT 1 FROM users WHERE email = ?", (body.email.lower(),)).fetchone():
             raise HTTPException(409, "An account with that email already exists")
         cur = c.execute(
-            "INSERT INTO users (email, name, student_id, password_hash, role, created_at) VALUES (?,?,?,?,?,?)",
-            (body.email.lower(), body.name, body.student_id, hash_password(body.password), Role.student.value, db.now_iso()),
+            "INSERT INTO users (email, name, student_id, password_hash, role, terms_version, terms_accepted_at, created_at)"
+            " VALUES (?,?,?,?,?,?,?,?)",
+            (body.email.lower(), body.name, body.student_id, hash_password(body.password), Role.student.value,
+             body.accepted_terms_version, db.now_iso(), db.now_iso()),
         )
         user_id = cur.lastrowid
     return TokenOut(access_token=create_access_token(user_id, Role.student.value), role=Role.student)

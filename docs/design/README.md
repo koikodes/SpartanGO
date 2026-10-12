@@ -31,6 +31,14 @@ Each screen gets a wireframe and a mockup. The last column shows which feasibili
 | 8 | Operator validation view | Show valid / invalid / expired result clearly | ☐ | ☐ | `(tabs)/scan.tsx` (expired not yet separate) |
 | 9 | Service unavailable / degraded state | Explain what the user can do when data or connectivity fails | ☐ | ☐ | Not built (FR-08) |
 
+**Extra screens (team-added, not required by the proposal):**
+
+| # | Screen | Design intent | Wireframe | Mockup | Prototype screen |
+| --- | --- | --- | --- | --- | --- |
+| 10 | More menu | Account info, links to About and Terms, sign out | ☐ | ☐ | `(tabs)/more.tsx` |
+| 11 | About the team | Who built SpartanGO, advisor, course | ☐ | ☐ | `about.tsx` (edit names/roles in `src/content/team.ts`) |
+| 12 | Terms and Conditions | Plain-language prototype terms; sign-up requires agreeing | ☐ | ☐ | `terms.tsx` (text in `src/content/terms.ts`) |
+
 ## Required user journeys (proposal section 5)
 
 1. Student requests a ride from a designated stop.

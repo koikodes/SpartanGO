@@ -51,6 +51,7 @@ class SignupIn(BaseModel):
     password: str = Field(min_length=8)
     name: str = Field(min_length=1, max_length=80)
     student_id: str = Field(min_length=4, max_length=20)
+    accepted_terms_version: str = Field(min_length=1, max_length=20, description="Version of the Terms the user agreed to")
 
 
 class LoginIn(BaseModel):

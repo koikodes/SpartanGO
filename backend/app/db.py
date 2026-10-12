@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS users (
     student_id    TEXT NOT NULL,
     password_hash TEXT NOT NULL,
     role          TEXT NOT NULL DEFAULT 'student',
+    terms_version TEXT,
+    terms_accepted_at TEXT,
     active        INTEGER NOT NULL DEFAULT 1,
     created_at    TEXT NOT NULL
 );
@@ -59,6 +61,11 @@ def connect():
 def init() -> None:
     with connect() as c:
         c.executescript(SCHEMA)
+        # upgrade databases created before these columns existed
+        cols = {r["name"] for r in c.execute("PRAGMA table_info(users)")}
+        for col in ("terms_version", "terms_accepted_at"):
+            if col not in cols:
+                c.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
 
 
 def now_iso() -> str:

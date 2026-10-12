@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import db, security
+from app.config import settings
 from app.geo import eta_seconds
 from app.main import ROUTES_BY_ID, app
 from app.models import Vehicle
@@ -24,7 +25,8 @@ def make_user(email, role):
 
 
 def signup(client, email="koi@spartans.nsu.edu"):
-    r = client.post("/auth/signup", json={"email": email, "password": "password123", "name": "Koi", "student_id": "123456"})
+    r = client.post("/auth/signup", json={"email": email, "password": "password123", "name": "Koi", "student_id": "123456",
+                                          "accepted_terms_version": settings.terms_version})
     assert r.status_code == 201, r.text
     return {"Authorization": f"Bearer {r.json()['access_token']}"}
 
@@ -58,8 +60,19 @@ def test_eta_on_loop_wraps_and_one_way_returns_none():
 
 
 def test_signup_requires_nsu_email(client):
-    r = client.post("/auth/signup", json={"email": "x@gmail.com", "password": "password123", "name": "X", "student_id": "1234"})
+    r = client.post("/auth/signup", json={"email": "x@gmail.com", "password": "password123", "name": "X", "student_id": "1234",
+                                          "accepted_terms_version": settings.terms_version})
     assert r.status_code == 400
+
+
+def test_signup_requires_current_terms(client):
+    base = {"email": "t@spartans.nsu.edu", "password": "password123", "name": "T", "student_id": "1234"}
+    assert client.post("/auth/signup", json=base).status_code == 422                                      # not accepted
+    assert client.post("/auth/signup", json={**base, "accepted_terms_version": "2000-01-01"}).status_code == 400  # outdated
+    assert client.post("/auth/signup", json={**base, "accepted_terms_version": settings.terms_version}).status_code == 201
+    with db.connect() as c:
+        row = c.execute("SELECT terms_version, terms_accepted_at FROM users WHERE email = ?", (base["email"],)).fetchone()
+    assert row["terms_version"] == settings.terms_version and row["terms_accepted_at"]
 
 
 def test_login_wrong_password_generic_error(client):
