@@ -122,3 +122,11 @@ def test_qr_pass_valid_once_and_tamper_proof(client):
 def test_pass_expires():
     token, _ = security.issue_pass(7, now=1_000_000)
     assert security.check_pass(token, now=1_000_000 + 300)[1].startswith("Pass expired")
+
+
+def test_password_hashing_round_trip():
+    h = security.hash_password("correct horse")
+    assert h.startswith("pbkdf2_sha256$")
+    assert security.verify_password("correct horse", h)
+    assert not security.verify_password("wrong", h)
+    assert not security.verify_password("x", "garbage")

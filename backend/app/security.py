@@ -22,21 +22,34 @@ from . import db
 from .config import settings
 from .models import Role, UserOut
 
-# ---------- passwords (scrypt, stdlib) ----------
+# ---------- passwords (PBKDF2-SHA256, stdlib) ----------
+# PBKDF2 is available in every Python build (Apple's built-in Python lacks hashlib.scrypt).
+# 600,000 iterations follows current OWASP guidance for PBKDF2-SHA256.
+
+PBKDF2_ITERATIONS = 600_000
+
 
 def hash_password(password: str) -> str:
     salt = secrets.token_bytes(16)
-    digest = hashlib.scrypt(password.encode(), salt=salt, n=2**14, r=8, p=1)
-    return f"scrypt${salt.hex()}${digest.hex()}"
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, PBKDF2_ITERATIONS)
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt.hex()}${digest.hex()}"
 
 
 def verify_password(password: str, stored: str) -> bool:
+    parts = stored.split("$")
     try:
-        _, salt_hex, digest_hex = stored.split("$")
+        if parts[0] == "pbkdf2_sha256" and len(parts) == 4:
+            iterations, salt, expected = int(parts[1]), bytes.fromhex(parts[2]), parts[3]
+            digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, iterations)
+        elif parts[0] == "scrypt" and len(parts) == 3 and hasattr(hashlib, "scrypt"):
+            # older accounts created before the switch to PBKDF2
+            salt, expected = bytes.fromhex(parts[1]), parts[2]
+            digest = hashlib.scrypt(password.encode(), salt=salt, n=2**14, r=8, p=1)
+        else:
+            return False
     except ValueError:
         return False
-    digest = hashlib.scrypt(password.encode(), salt=bytes.fromhex(salt_hex), n=2**14, r=8, p=1)
-    return hmac.compare_digest(digest.hex(), digest_hex)
+    return hmac.compare_digest(digest.hex(), expected)
 
 # ---------- login tokens (JWT) ----------
 
