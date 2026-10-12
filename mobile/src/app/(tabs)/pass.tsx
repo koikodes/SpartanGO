@@ -40,7 +40,8 @@ export default function RidePass() {
   return (
     <Screen style={{ alignItems: 'center', justifyContent: 'center' }}>
       <Card style={{ alignItems: 'center', padding: space.lg, gap: space.md, width: '100%' }}>
-        <Text style={[text.h2, { color: colors.green }]}>NSU Shuttle Pass</Text>
+        <Text style={[text.h2, { color: colors.green }]}>Prototype Ride Pass</Text>
+        <Text style={text.muted}>Capstone demo · not an official NSU ID</Text>
         <Text style={text.body}>{user?.name}</Text>
         <View style={{ padding: space.md, backgroundColor: '#fff', borderRadius: 12 }}>
           {pass ? <QRCode value={pass.token} size={240} color={colors.text} /> : <View style={{ width: 240, height: 240 }} />}

@@ -31,7 +31,7 @@ export default function Signup() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView style={{ backgroundColor: colors.bg }} contentContainerStyle={{ padding: space.md, paddingTop: 80, gap: space.md }}>
         <Text style={text.h1}>Create your account</Text>
-        <Text style={text.muted}>Use your NSU email. Your ride pass replaces showing your ID.</Text>
+        <Text style={text.muted}>Use your NSU email. SpartanGO is a student capstone prototype, not an official NSU service.</Text>
         <Field label="Full name" value={form.name} onChangeText={set('name')} autoComplete="name" />
         <Field label="NSU email" value={form.email} onChangeText={set('email')} autoCapitalize="none" keyboardType="email-address" />
         <Field label="Student ID" value={form.student_id} onChangeText={set('student_id')} autoCapitalize="none" />

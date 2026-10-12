@@ -1,6 +1,8 @@
 # SpartanGO
 
-NSU's shuttle app: live shuttle map, arrival times with alerts, ride requests, and a rotating QR ride pass that replaces showing a student ID.
+Capstone prototype of a campus shuttle app for NSU: live shuttle map, arrival times with alerts, ride requests, and a short-lived QR boarding code a driver can check. The QR code is a prototype credential, not an official NSU ID.
+
+> **Status (CSC498, fall):** this code is a disposable *feasibility prototype*. Per the approved proposal, fall produces the design baseline (D1-D10) and spring (CSC499) builds it. Use this code as evidence for the Feasibility Report (D2), not as the production app.
 
 CSC capstone · Team: Tijaina Hill, Dennis Jordan, Jaden Lunsford, Ty'vaughn Daniels, Koi Williamson · Advisor: Dr. Nwosu
 

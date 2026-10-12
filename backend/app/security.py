@@ -1,6 +1,6 @@
 """Password hashing, login tokens, and the rotating QR ride pass.
 
-Ride pass design (replaces showing a physical ID):
+Prototype ride pass design (a capstone demo credential, NOT an official NSU ID):
   token = "<user_id>.<time_window>.<HMAC-SHA256(user_id.window, PASS_SECRET)>"
   - The window advances every PASS_WINDOW_SECONDS, so the QR changes constantly and a
     screenshot shared with a friend expires within seconds.
