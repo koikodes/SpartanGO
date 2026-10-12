@@ -30,7 +30,7 @@ spartango/
 
 ## Run it (about 10 minutes)
 
-**1. Backend** (Python 3.11+)
+**1. Backend** (Python 3.9+)
 ```bash
 cd backend
 python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate

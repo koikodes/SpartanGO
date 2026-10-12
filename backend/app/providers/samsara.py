@@ -19,6 +19,7 @@ vehicles never appear in the student app.
 GPS updates about every 5 s while a vehicle is on; Samsara asks clients to poll no
 faster than every 5 s, so this adapter caches the last response for MIN_POLL_SECONDS.
 """
+from typing import Optional
 import json
 import time
 from datetime import datetime, timezone
@@ -103,7 +104,7 @@ class SamsaraProvider(TrackerProvider):
         return out
 
 
-def _parse_time(value) -> datetime | None:
+def _parse_time(value) -> Optional[datetime]:
     if not value:
         return None
     try:

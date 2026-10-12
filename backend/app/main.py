@@ -3,6 +3,7 @@
 Run locally:   uvicorn app.main:app --reload --env-file .env --host 0.0.0.0 --port 8000
 Docs:          http://localhost:8000/docs
 """
+from typing import Optional
 import json
 import time
 from contextlib import asynccontextmanager
@@ -79,7 +80,7 @@ def get_route(route_id: str):
 
 
 @app.get("/vehicles", response_model=list[Vehicle])
-async def list_vehicles(route_id: str | None = None):
+async def list_vehicles(route_id: Optional[str] = None):
     vehicles = await live_vehicles()
     return [v for v in vehicles if route_id is None or v.route_id == route_id]
 
@@ -171,7 +172,7 @@ def my_rides(user: UserOut = Depends(current_user)):
 
 
 @app.get("/rides/queue", response_model=list[RideRequestOut])
-def ride_queue(route_id: str | None = None, _: UserOut = Depends(require_role(Role.driver, Role.admin))):
+def ride_queue(route_id: Optional[str] = None, _: UserOut = Depends(require_role(Role.driver, Role.admin))):
     q = "SELECT * FROM ride_requests WHERE status IN ('pending','accepted')"
     args: tuple = ()
     if route_id:

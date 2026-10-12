@@ -14,6 +14,7 @@ GTFS_RT_ROUTE_MAP maps the vendor's route ids to SpartanGO route ids in data/rou
 Vehicles on routes not in the map, without a position, or older than MAX_AGE_SECONDS
 are skipped, so the app never shows a stale or unknown shuttle as live.
 """
+from typing import Optional
 import json
 import time
 from datetime import datetime, timezone
@@ -80,7 +81,7 @@ class GtfsRealtimeProvider(TrackerProvider):
         return out
 
 
-def _occupancy_to_load(vp) -> float | None:
+def _occupancy_to_load(vp) -> Optional[float]:
     if vp.HasField("occupancy_percentage"):
         return max(0.0, min(1.0, vp.occupancy_percentage / 100))
     if vp.HasField("occupancy_status"):

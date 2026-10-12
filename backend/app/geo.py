@@ -6,6 +6,7 @@ ETA approach (simple, explainable for a capstone demo):
   3. Divide by average speed (observed speed when the tracker gives one).
 Swap in the vendor's own ETA feed later if it provides one.
 """
+from typing import Optional
 import math
 
 from .models import Route, Vehicle
@@ -69,7 +70,7 @@ def stop_offset(route: Route, stop_id: str) -> float:
     raise KeyError(stop_id)
 
 
-def eta_seconds(route: Route, vehicle: Vehicle, stop_id: str, default_speed_mps: float) -> int | None:
+def eta_seconds(route: Route, vehicle: Vehicle, stop_id: str, default_speed_mps: float) -> Optional[int]:
     """Seconds until `vehicle` reaches `stop_id`, or None if it has already passed it (one-way routes)."""
     total = sum(segment_lengths(route))
     here = position_along_route(route, vehicle.lat, vehicle.lng)

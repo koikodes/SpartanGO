@@ -9,6 +9,7 @@ response shaped like {"data": {"<agency_id>": [ {vehicle_id, route_id, location:
 heading, speed (km/h), passenger_load, last_updated_on}, ... ]}}. Newer vendor APIs differ,
 so treat this mapping as a starting point, not a spec.
 """
+from typing import Optional
 from datetime import datetime, timezone
 
 import httpx
@@ -20,7 +21,7 @@ BASE_URL = "https://transloc-api-1-2.p.rapidapi.com"
 
 
 class TransLocProvider(TrackerProvider):
-    def __init__(self, api_key: str, agency_id: str, route_map: dict[str, str] | None = None):
+    def __init__(self, api_key: str, agency_id: str, route_map: Optional[dict[str, str]] = None):
         if not api_key or not agency_id:
             raise ValueError("Set TRANSLOC_API_KEY and TRANSLOC_AGENCY_ID to use the TransLoc provider.")
         self.api_key = api_key
@@ -36,7 +37,7 @@ class TransLocProvider(TrackerProvider):
             raw = r.json().get("data", {}).get(self.agency_id, [])
         return [v for v in (self._to_vehicle(x) for x in raw) if v]
 
-    def _to_vehicle(self, x: dict) -> Vehicle | None:
+    def _to_vehicle(self, x: dict) -> Optional[Vehicle]:
         route_id = self.route_map.get(str(x.get("route_id")))
         loc = x.get("location") or {}
         if not route_id or "lat" not in loc:

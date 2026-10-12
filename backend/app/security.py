@@ -7,6 +7,7 @@ Prototype ride pass design (a capstone demo credential, NOT an official NSU ID):
   - Only the server holds PASS_SECRET, so a token can't be forged.
   - Each token can be scanned once (replay protection).
 """
+from typing import Optional
 import hashlib
 import hmac
 import secrets
@@ -47,7 +48,7 @@ def create_access_token(user_id: int, role: str) -> str:
 _bearer = HTTPBearer(auto_error=False)
 
 
-def current_user(creds: HTTPAuthorizationCredentials | None = Depends(_bearer)) -> UserOut:
+def current_user(creds: Optional[HTTPAuthorizationCredentials] = Depends(_bearer)) -> UserOut:
     if creds is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Not signed in")
     try:
@@ -75,7 +76,7 @@ def _sign(user_id: int, window: int) -> str:
     return hmac.new(settings.pass_secret.encode(), msg, hashlib.sha256).hexdigest()[:32]
 
 
-def issue_pass(user_id: int, now: float | None = None) -> tuple[str, int]:
+def issue_pass(user_id: int, now: Optional[float] = None) -> tuple[str, int]:
     now = time.time() if now is None else now
     w = settings.pass_window_seconds
     window = int(now // w)
@@ -86,7 +87,7 @@ def issue_pass(user_id: int, now: float | None = None) -> tuple[str, int]:
 _used_tokens: dict[str, float] = {}
 
 
-def check_pass(token: str, now: float | None = None) -> tuple[int | None, str | None]:
+def check_pass(token: str, now: Optional[float] = None) -> tuple[Optional[int], Optional[str]]:
     """Return (user_id, None) if valid, else (None, reason)."""
     now = time.time() if now is None else now
     try:
