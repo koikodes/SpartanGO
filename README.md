@@ -8,6 +8,7 @@ CSC capstone · Team: Tijaina Hill, Dennis Jordan, Jaden Lunsford, Ty'vaughn Dan
 
 ```
 spartango/
+├── docs/               Proposal (D1), project plan, diagrams, and CSC498 deliverables
 ├── backend/            Python FastAPI API (routes, live shuttles, ETAs, rides, passes)
 │   ├── app/
 │   │   ├── main.py         all API endpoints
