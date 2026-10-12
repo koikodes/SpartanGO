@@ -11,4 +11,7 @@ def get_provider(routes) -> TrackerProvider:
     if name == "transloc":
         from .transloc import TransLocProvider
         return TransLocProvider(settings.transloc_api_key, settings.transloc_agency_id)
+    if name == "gtfs_rt":
+        from .gtfs_rt import GtfsRealtimeProvider
+        return GtfsRealtimeProvider.from_settings(settings)
     raise ValueError(f"Unknown TRACKER_PROVIDER: {name!r}")

@@ -1,6 +1,6 @@
 """SpartanGO API.
 
-Run locally:   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+Run locally:   uvicorn app.main:app --reload --env-file .env --host 0.0.0.0 --port 8000
 Docs:          http://localhost:8000/docs
 """
 import json

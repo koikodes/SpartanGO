@@ -6,10 +6,14 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class Settings:
-    # Which live-location source to use: "mock" (simulated shuttles) or "transloc".
+    # Which live-location source to use: "mock" (simulated), "gtfs_rt" (standard feed), or "transloc".
     tracker_provider: str = os.getenv("TRACKER_PROVIDER", "mock")
     transloc_api_key: str = os.getenv("TRANSLOC_API_KEY", "")
     transloc_agency_id: str = os.getenv("TRANSLOC_AGENCY_ID", "")
+    gtfs_rt_url: str = os.getenv("GTFS_RT_URL", "")
+    gtfs_rt_api_key: str = os.getenv("GTFS_RT_API_KEY", "")
+    gtfs_rt_api_key_header: str = os.getenv("GTFS_RT_API_KEY_HEADER", "x-api-key")
+    gtfs_rt_route_map: str = os.getenv("GTFS_RT_ROUTE_MAP", "{}")  # JSON: vendor route id -> SpartanGO route id
 
     # Secrets. In production these MUST come from the environment, never the repo.
     jwt_secret: str = field(default_factory=lambda: os.getenv("JWT_SECRET") or secrets.token_hex(32))

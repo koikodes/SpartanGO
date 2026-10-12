@@ -37,7 +37,7 @@ python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\a
 pip install -r requirements.txt
 cp .env.example .env                                    # then edit secrets
 python seed.py                                          # demo driver@nsu.edu / driverpass123
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --env-file .env --host 0.0.0.0 --port 8000
 ```
 Open http://localhost:8000/docs to try every endpoint in the browser. Run tests with `pytest`.
 
@@ -53,6 +53,8 @@ Scan the QR code in the terminal with **Expo Go** on your phone (phone and lapto
 Checks before committing: `npm run typecheck` (mobile) and `pytest` (backend).
 
 ## Plugging in NSU's real shuttle tracker
+
+Full guide, including what to ask NSU: [docs/TRACKER_INTEGRATION.md](docs/TRACKER_INTEGRATION.md). If the vendor offers a GTFS-Realtime feed, set `TRACKER_PROVIDER=gtfs_rt` and the feed URL; no code changes.
 
 Every location source implements one method, `get_vehicles()`, in `backend/app/providers/`. Today `TRACKER_PROVIDER=mock` simulates shuttles driving the routes.
 
