@@ -4,6 +4,10 @@ Overview
 
 This user flow describes how an NSU student uses SpartanGO to select a pickup stop, view shuttle information, and request a ride.
 
+## User Flow Diagram
+
+![SpartanGO Request Ride User Flow](user-diagram.png)
+
 Primary user: NSU student
 Goal: Request a shuttle ride from an approved pickup stop.
 Entry point: SpartanGO student home screen.
