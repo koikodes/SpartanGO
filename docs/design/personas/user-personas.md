@@ -4,6 +4,10 @@ Overview
 
 These personas represent two potential users of SpartanGO, a campus shuttle application designed for Norfolk State University students. They help guide the design of an easy-to-use campus transportation experience.
 
+## Persona Overview
+
+![SpartanGO UX/UI User Personas](user-personas.png)
+
 Persona 1: Jasmine Carter
 
 Age: 20
