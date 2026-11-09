@@ -1,0 +1,34 @@
+# One-click hosting for the SpartanGO API on Render (render.com).
+# Render dashboard → New → Blueprint → pick this repo. Then fill in the two demo passwords.
+services:
+  - type: web
+    name: spartango-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Real shuttles come from tracker mode (a phone riding the shuttle). Use "phone+mock" to
+      # also show simulated shuttles while testing. Use "samsara" only with NSU's written approval.
+      - key: TRACKER_PROVIDER
+        value: phone
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PASS_SECRET
+        generateValue: true
+      - key: ALLOWED_EMAIL_DOMAINS
+        value: spartans.nsu.edu,nsu.edu
+      - key: TIMEZONE
+        value: America/New_York
+      # The free plan's disk resets on every deploy/restart, so demo staff accounts are
+      # re-created at startup. Students sign up again in the app after a restart.
+      - key: SEED_DEMO_ACCOUNTS
+        value: "true"
+      - key: DEMO_DRIVER_PASSWORD
+        sync: false   # you type this in the Render dashboard; never commit it
+      - key: DEMO_ADMIN_PASSWORD
+        sync: false

@@ -1,6 +1,8 @@
 # SpartanGO
 
-Capstone prototype of a campus shuttle app for NSU: live shuttle map, arrival times with alerts, ride requests, and a short-lived QR boarding code a driver can check. The QR code is a prototype credential, not an official NSU ID.
+Capstone prototype of a campus shuttle app for NSU: live shuttle map, arrival times with alerts, Uber-style ride requests (the closest shuttle with a seat is assigned automatically), a short-lived QR boarding code a driver can check, and service alerts for moved stops and holidays. The QR code is a prototype credential, not an official NSU ID.
+
+**Final demo:** real shuttles come from *tracker mode* (a phone riding the shuttle shares its GPS), so no access to NSU's Samsara system is needed. See [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md) for hosting, setup and the demo script.
 
 > **Status (CSC498, fall):** this code is a disposable *feasibility prototype*. Per the approved proposal, fall produces the design baseline (D1-D10) and spring (CSC499) builds it. Use this code as evidence for the Feasibility Report (D2), not as the production app.
 
@@ -12,8 +14,11 @@ spartango/
 ├── backend/            Python FastAPI API (routes, live shuttles, ETAs, rides, passes)
 │   ├── app/
 │   │   ├── main.py         all API endpoints
-│   │   ├── providers/      where live shuttle locations come from (mock now, NSU tracker later)
-│   │   ├── geo.py          ETA math
+│   │   ├── providers/      where live shuttle locations come from (phone tracker mode, mock, Samsara with approval)
+│   │   ├── geo.py          ETA math (measured stop-to-stop times, timetable fallback)
+│   │   ├── dispatch.py     automatic shuttle assignment for ride requests
+│   │   ├── alerts.py       service alerts (stop moved, no service, delay, announcement)
+│   │   ├── push.py         push notifications through Expo
 │   │   ├── security.py     passwords, login tokens, QR pass signing
 │   │   ├── db.py           SQLite tables
 │   │   └── data/routes.json  routes + stops (PLACEHOLDER coordinates, replace)
@@ -23,7 +28,9 @@ spartango/
     └── src/
         ├── app/            screens (Expo Router: every file is a screen)
         │   ├── (auth)/     login, signup
-        │   └── (tabs)/     map, arrivals, ride, pass  |  driver: queue, scan
+        │   ├── (tabs)/     map, arrivals, ride, pass  |  driver: queue, scan, drive (tracker mode)
+        │   ├── alerts.tsx        service alerts for everyone
+        │   └── admin-alerts.tsx  admins post alerts
         ├── components/     shared UI
         └── lib/            API client, auth, polling, notifications, theme
 ```
@@ -56,7 +63,7 @@ Checks before committing: `npm run typecheck` (mobile) and `pytest` (backend).
 
 NSU's shuttles report to **Samsara**. With a read-only Samsara API token from NSU, set `TRACKER_PROVIDER=samsara` and the token in `.env`; no code changes. Full guide, including what to ask NSU: [docs/TRACKER_INTEGRATION.md](docs/TRACKER_INTEGRATION.md).
 
-Every location source implements one method, `get_vehicles()`, in `backend/app/providers/`. Today `TRACKER_PROVIDER=mock` simulates shuttles driving the routes.
+Every location source implements one method, `get_vehicles()`, in `backend/app/providers/`. `TRACKER_PROVIDER=phone` uses tracker mode (a phone on the shuttle), `mock` simulates shuttles, and sources can be combined, e.g. `phone+mock`.
 
 1. Ask NSU Transportation which vendor the shuttles report to (TransLoc, Passio GO, DoubleMap, Samsara, a fleet GPS, etc.) and request read-only API access for the project.
 2. Copy `providers/transloc.py` (a template) or write a new class for that vendor; map its vehicle and route IDs to ours.
@@ -71,7 +78,7 @@ The pass encodes `user_id.time_window.HMAC-SHA256(user_id.time_window, PASS_SECR
 - Changes every 30 s, so a screenshot shared with someone else stops working almost immediately.
 - Can't be forged without the server-only secret; tampering with the user id breaks the signature.
 - Each code can be scanned once (replay protection), and inactive accounts are rejected.
-- Login tokens are stored in the phone's Keychain/Keystore (expo-secure-store), passwords hashed with scrypt.
+- Login tokens are stored in the phone's Keychain/Keystore (expo-secure-store), passwords hashed with PBKDF2-SHA256 (600,000 iterations).
 
 ## Making it downloadable
 
