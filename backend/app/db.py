@@ -35,6 +35,26 @@ CREATE TABLE IF NOT EXISTS boardings (
     vehicle_id  TEXT,
     boarded_at  TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS service_alerts (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    type          TEXT NOT NULL,
+    title         TEXT NOT NULL,
+    message       TEXT NOT NULL,
+    route_ids     TEXT NOT NULL DEFAULT '[]',
+    stop_id       TEXT,
+    moved_to_name TEXT,
+    moved_to_lat  REAL,
+    moved_to_lng  REAL,
+    starts_at     TEXT NOT NULL,
+    ends_at       TEXT,
+    created_by    INTEGER REFERENCES users(id),
+    created_at    TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS push_tokens (
+    token       TEXT PRIMARY KEY,
+    user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at  TEXT NOT NULL
+);
 """
 
 _db_path = settings.database_path
@@ -66,6 +86,10 @@ def init() -> None:
         for col in ("terms_version", "terms_accepted_at"):
             if col not in cols:
                 c.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
+        ride_cols = {r["name"] for r in c.execute("PRAGMA table_info(ride_requests)")}
+        for col in ("vehicle_id", "assigned_at"):
+            if col not in ride_cols:
+                c.execute(f"ALTER TABLE ride_requests ADD COLUMN {col} TEXT")
 
 
 def now_iso() -> str:

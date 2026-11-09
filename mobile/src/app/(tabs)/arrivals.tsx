@@ -1,16 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { AlertBanner } from '@/components/AlertBanner';
 import { Icon } from '@/components/Icon';
 import { Card, Chip, ErrorText, Screen, text } from '@/components/ui';
 import { api } from '@/lib/api';
 import { ensureNotificationPermission, notifyArrival } from '@/lib/notify';
 import { colors, formatEta, space } from '@/lib/theme';
-import type { Arrival } from '@/lib/types';
+import type { Arrival, ArrivalKind } from '@/lib/types';
 import { usePolling } from '@/lib/usePolling';
 import { useRoutes } from '@/lib/useRoutes';
 
 const ALERT_SECONDS = 180; // notify when the shuttle is ~3 minutes out
+
+const KIND_LABEL: Record<ArrivalKind, string> = { live: 'Live', simulated: 'Simulated', scheduled: 'Scheduled' };
+
+/** e.g. "Live · about 4 min, 12 min". Always says where the time came from. */
+function describe(list: Arrival[]) {
+  const kind = list[0].kind;
+  return `${KIND_LABEL[kind]} · ${list.map((a, i) => (i === 0 && a.eta_seconds >= 45 ? `about ${formatEta(a.eta_seconds)}` : formatEta(a.eta_seconds))).join(', ')}`;
+}
 
 export default function Arrivals() {
   const { routes, error: routesError } = useRoutes();
@@ -39,7 +48,7 @@ export default function Arrivals() {
     if (!watched || !data || !route) return;
     const next = data[watched]?.[0];
     if (next && next.eta_seconds <= ALERT_SECONDS) {
-      const key = `${watched}:${next.vehicle_id}`;
+      const key = `${watched}:${next.vehicle_id ?? 'scheduled'}`;
       if (!alerted.current.has(key)) {
         alerted.current.add(key);
         const stop = route.stops.find((s) => s.id === watched);
@@ -47,7 +56,7 @@ export default function Arrivals() {
       }
     } else if (next) {
       // shuttle moved on / new one coming: allow alerting again
-      for (const k of alerted.current) if (k.startsWith(`${watched}:`) && k !== `${watched}:${next.vehicle_id}`) alerted.current.delete(k);
+      for (const k of alerted.current) if (k.startsWith(`${watched}:`) && k !== `${watched}:${next.vehicle_id ?? 'scheduled'}`) alerted.current.delete(k);
     }
   }, [data, watched, route]);
 
@@ -63,6 +72,7 @@ export default function Arrivals() {
           <Chip key={r.id} label={r.name} color={r.color} selected={r.id === routeId} onPress={() => setRouteId(r.id)} />
         ))}
       </ScrollView>
+      <AlertBanner routeId={routeId} />
       <ErrorText>{routesError ?? error}</ErrorText>
       <FlatList
         data={route?.stops ?? []}
@@ -75,8 +85,11 @@ export default function Arrivals() {
             <Card style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={[text.body, { fontWeight: '600' }]}>{item.name}</Text>
+                {item.temporary && <Text style={{ color: '#6B4E00' }}>Moved to {item.temporary.name} for now</Text>}
                 <Text style={text.muted}>
-                  {data == null ? 'Loading…' : list.length ? list.map((a) => formatEta(a.eta_seconds)).join(' · ') : 'No shuttle approaching'}
+                  {route?.service_paused
+                    ? `No service: ${route.service_paused}`
+                    : data == null ? 'Loading…' : list.length ? describe(list) : 'No shuttle approaching'}
                 </Text>
               </View>
               <Pressable

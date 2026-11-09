@@ -1,4 +1,6 @@
-import type { Arrival, Pass, PassCheck, Ride, RideStatus, Role, Route, User, Vehicle } from './types';
+import type {
+  AlertInput, Arrival, Pass, PassCheck, Ride, RideStatus, Role, Route, ServiceAlert, TrackerFix, User, Vehicle,
+} from './types';
 
 // Set EXPO_PUBLIC_API_URL in mobile/.env. On a physical phone use your computer's LAN IP
 // (e.g. http://192.168.1.20:8000), not localhost.
@@ -33,6 +35,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     } catch {}
     throw new ApiError(res.status, msg);
   }
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
@@ -49,12 +52,25 @@ export const api = {
   login: (b: { email: string; password: string }) => post<{ access_token: string; role: Role }>('/auth/login', b),
   me: () => request<User>('/me'),
 
+  registerPushToken: (token: string) => post<void>('/me/push-token', { token }),
+
   requestRide: (b: { route_id: string; pickup_stop_id: string; dropoff_stop_id: string; note?: string }) => post<Ride>('/rides', b),
   myRides: () => request<Ride[]>('/rides/mine'),
-  rideQueue: () => request<Ride[]>('/rides/queue'),
-  updateRide: (id: number, status: RideStatus) =>
-    request<Ride>(`/rides/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  rideQueue: (vehicleId?: string) =>
+    request<Ride[]>(`/rides/queue${vehicleId ? `?vehicle_id=${encodeURIComponent(vehicleId)}` : ''}`),
+  updateRide: (id: number, status: RideStatus, vehicle_id?: string) =>
+    request<Ride>(`/rides/${id}`, { method: 'PATCH', body: JSON.stringify({ status, vehicle_id }) }),
 
   pass: () => request<Pass>('/pass'),
   verifyPass: (token: string, vehicle_id?: string) => post<PassCheck>('/pass/verify', { token, vehicle_id }),
+
+  // tracker mode: a phone riding the shuttle reports its GPS position
+  trackerPosition: (fix: TrackerFix) => post<void>('/tracker/position', fix),
+  trackerStop: (vehicleId: string) => request<void>(`/tracker/position/${encodeURIComponent(vehicleId)}`, { method: 'DELETE' }),
+
+  // service alerts
+  alerts: (includeUpcoming = false) => request<ServiceAlert[]>(`/alerts${includeUpcoming ? '?include_upcoming=true' : ''}`),
+  allAlerts: () => request<ServiceAlert[]>('/alerts/all'),
+  createAlert: (a: AlertInput) => post<ServiceAlert>('/alerts', a),
+  endAlert: (id: number) => post<ServiceAlert>(`/alerts/${id}/end`, {}),
 };

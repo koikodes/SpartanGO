@@ -49,5 +49,6 @@ class MockProvider(TrackerProvider):
                     speed_mps=SIM_SPEED_MPS,
                     passenger_load=round(((int(now) // 60 + n * 3) % 10) / 10, 1),
                     updated_at=datetime.fromtimestamp(now, tz=timezone.utc),
+                    source="simulated",
                 ))
         return out

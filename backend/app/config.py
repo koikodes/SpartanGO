@@ -6,9 +6,20 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class Settings:
-    # Which live-location source to use: "mock" (simulated), "samsara" (NSU's fleet tracker),
-    # "gtfs_rt" (standard feed), or "transloc".
+    # Which live-location source(s) to use, joined with "+": "phone" (tracker mode on a phone
+    # riding the shuttle), "mock" (simulated), "samsara" (only with written NSU approval),
+    # "gtfs_rt", or "transloc". Example for the demo: "phone" or "phone+mock".
     tracker_provider: str = os.getenv("TRACKER_PROVIDER", "mock")
+    # Positions older than this are treated as stale and hidden (FR-03, FR-11).
+    stale_after_seconds: int = int(os.getenv("STALE_AFTER_SECONDS", "120"))
+    # Seats per shuttle, used when assigning shared rides.
+    shuttle_capacity: int = int(os.getenv("SHUTTLE_CAPACITY", "20"))
+    # Local time zone for schedules and holidays.
+    timezone: str = os.getenv("TIMEZONE", "America/New_York")
+    # Send push notifications through Expo's push service.
+    push_enabled: bool = os.getenv("PUSH_ENABLED", "true").lower() == "true"
+    # Create demo driver/admin accounts at startup (useful on hosts whose disk resets).
+    seed_demo_accounts: bool = os.getenv("SEED_DEMO_ACCOUNTS", "false").lower() == "true"
     transloc_api_key: str = os.getenv("TRANSLOC_API_KEY", "")
     transloc_agency_id: str = os.getenv("TRANSLOC_AGENCY_ID", "")
     samsara_api_token: str = os.getenv("SAMSARA_API_TOKEN", "")

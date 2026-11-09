@@ -5,6 +5,7 @@
 | [CSC498_Fall_SpartanGO_Proposal.pdf](CSC498_Fall_SpartanGO_Proposal.pdf) | Advisor-approved proposal (D1), signed 09/20/2026. The outline every deliverable follows. |
 | [PROJECT_PLAN.md](PROJECT_PLAN.md) | Team plan: requirements coverage, architecture, workstreams, fall timeline, open questions, risks. |
 | [design/](design/) | App design (D4): required screens, user journeys, wireframes, mockups, prototype link. |
+| [DEMO_GUIDE.md](DEMO_GUIDE.md) | Final demo: tracker mode for real shuttles, hosting on Render, loading NSU stops and timing, demo script. |
 | [TRACKER_INTEGRATION.md](TRACKER_INTEGRATION.md) | How SpartanGO connects to the existing shuttle tracking system, and what to ask NSU. |
 | [images/](images/) | Architecture diagram and CSC498 roadmap. |
 

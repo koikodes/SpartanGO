@@ -90,15 +90,18 @@ def test_ride_request_flow(client):
 
     body = {"route_id": "campus-loop", "pickup_stop_id": "library", "dropoff_stop_id": "west-campus"}
     ride = client.post("/rides", json=body, headers=student).json()
-    assert ride["status"] == "pending"
+    # Uber-style: the system assigns a shuttle right away; the student never picks a driver
+    assert ride["status"] == "accepted" and ride["vehicle_id"].startswith("campus-loop-")
+    assert ride["pickup_eta_seconds"] is not None and ride["vehicle"]["id"] == ride["vehicle_id"]
     assert client.post("/rides", json=body, headers=student).status_code == 409  # one open ride at a time
 
-    # students can't see the driver queue or accept rides
+    # students can't see the driver queue or move rides forward
     assert client.get("/rides/queue", headers=student).status_code == 403
-    assert client.patch(f"/rides/{ride['id']}", json={"status": "accepted"}, headers=student).status_code == 403
+    assert client.patch(f"/rides/{ride['id']}", json={"status": "picked_up"}, headers=student).status_code == 403
 
-    assert len(client.get("/rides/queue", headers=driver).json()) == 1
-    for s in ["accepted", "picked_up", "completed"]:
+    queue = client.get("/rides/queue", params={"vehicle_id": ride["vehicle_id"]}, headers=driver).json()
+    assert [r["id"] for r in queue] == [ride["id"]]
+    for s in ["picked_up", "completed"]:
         assert client.patch(f"/rides/{ride['id']}", json={"status": s}, headers=driver).json()["status"] == s
     assert client.patch(f"/rides/{ride['id']}", json={"status": "pending"}, headers=driver).status_code == 400
 

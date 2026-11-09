@@ -25,6 +25,14 @@ export default function More() {
         <Text style={text.muted}>{user?.email} · {user?.role}</Text>
       </Card>
       <Card style={{ paddingVertical: 0, gap: 0 }}>
+        <Row href="/alerts" label="Service alerts" />
+        <View style={{ height: 1, backgroundColor: colors.border }} />
+        {user?.role === 'admin' && (
+          <>
+            <Row href="/admin-alerts" label="Post a service alert" />
+            <View style={{ height: 1, backgroundColor: colors.border }} />
+          </>
+        )}
         <Row href="/about" label="About the team" />
         <View style={{ height: 1, backgroundColor: colors.border }} />
         <Row href="/terms" label="Terms and Conditions" />

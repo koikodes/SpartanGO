@@ -41,6 +41,12 @@
         {
           "color": "#007A53"
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "SpartanGO uses your location to show nearby stops, and in tracker mode to share the shuttle's position with riders."
+        }
       ]
     ]
   }

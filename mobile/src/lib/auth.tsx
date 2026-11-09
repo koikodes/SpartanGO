@@ -2,6 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
 import { api, setAuthToken } from './api';
+import { registerForPush } from './notify';
 import type { User } from './types';
 
 const TOKEN_KEY = 'spartango.token';
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await SecureStore.setItemAsync(TOKEN_KEY, token);
     setAuthToken(token);
     setUser(await api.me());
+    registerForPush();
   }, []);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (saved) {
           setAuthToken(saved);
           setUser(await api.me());
+          registerForPush();
         }
       } catch {
         await SecureStore.deleteItemAsync(TOKEN_KEY);
