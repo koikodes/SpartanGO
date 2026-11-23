@@ -1,5 +1,6 @@
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button, Card, Chip, ErrorText, Field, text } from '@/components/ui';
 import { api } from '@/lib/api';
@@ -15,6 +16,16 @@ const STATUS_LABEL: Record<Ride['status'], string> = {
   completed: 'Completed',
   cancelled: 'Cancelled',
 };
+
+function HistoryLink() {
+  return (
+    <Link href="/history" asChild>
+      <Pressable accessibilityRole="link" style={{ paddingVertical: space.sm, alignSelf: 'center' }}>
+        <Text style={{ color: colors.green, fontWeight: '600', fontSize: 16 }}>View ride history ›</Text>
+      </Pressable>
+    </Link>
+  );
+}
 
 export default function RequestRide() {
   const { routes } = useRoutes();
@@ -67,6 +78,7 @@ export default function RequestRide() {
           </Text>
           {open.status !== 'picked_up' && <Button title="Cancel ride" variant="secondary" onPress={() => cancel(open)} />}
         </Card>
+        <HistoryLink />
       </View>
     );
   }
@@ -96,6 +108,7 @@ export default function RequestRide() {
       <Field label="Note for driver (optional)" value={note} onChangeText={setNote} maxLength={200} placeholder="e.g. wheelchair access needed" />
       <ErrorText>{error}</ErrorText>
       <Button title="Request ride" onPress={submit} loading={busy} disabled={!pickup || !dropoff} />
+      <HistoryLink />
     </ScrollView>
   );
 }

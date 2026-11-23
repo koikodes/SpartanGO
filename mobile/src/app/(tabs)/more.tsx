@@ -25,6 +25,8 @@ export default function More() {
         <Text style={text.muted}>{user?.email} · {user?.role}</Text>
       </Card>
       <Card style={{ paddingVertical: 0, gap: 0 }}>
+        <Row href="/history" label="Ride history" />
+        <View style={{ height: 1, backgroundColor: colors.border }} />
         <Row href="/about" label="About the team" />
         <View style={{ height: 1, backgroundColor: colors.border }} />
         <Row href="/terms" label="Terms and Conditions" />

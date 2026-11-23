@@ -179,7 +179,7 @@ def request_ride(body: RideRequestIn, user: UserOut = Depends(require_role(Role.
         raise HTTPException(400, "Pickup and drop-off must be different")
     with db.connect() as c:
         open_ride = c.execute(
-            "SELECT 1 FROM ride_requests WHERE user_id = ? AND status IN ('pending','accepted')", (user.id,)
+            "SELECT 1 FROM ride_requests WHERE user_id = ? AND status IN ('pending','accepted','picked_up')", (user.id,)
         ).fetchone()
         if open_ride:
             raise HTTPException(409, "You already have an open ride request")
@@ -198,9 +198,23 @@ def my_rides(user: UserOut = Depends(current_user)):
     return [_ride_out(r) for r in rows]
 
 
+@app.get("/rides/history", response_model=list[RideRequestOut])
+def ride_history(user: UserOut = Depends(current_user)):
+    """Finished rides (dropped off or cancelled), newest first. Students see their own; drivers/admins see everyone's."""
+    q = "SELECT * FROM ride_requests WHERE status IN ('completed','cancelled')"
+    args: tuple = ()
+    if user.role == Role.student:
+        q += " AND user_id = ?"
+        args = (user.id,)
+    with db.connect() as c:
+        rows = c.execute(q + " ORDER BY id DESC LIMIT 50", args).fetchall()
+    return [_ride_out(r) for r in rows]
+
+
 @app.get("/rides/queue", response_model=list[RideRequestOut])
 def ride_queue(route_id: Optional[str] = None, _: UserOut = Depends(require_role(Role.driver, Role.admin))):
-    q = "SELECT * FROM ride_requests WHERE status IN ('pending','accepted')"
+    # include riders who are on board, so the driver can mark them dropped off
+    q = "SELECT * FROM ride_requests WHERE status IN ('pending','accepted','picked_up')"
     args: tuple = ()
     if route_id:
         q += " AND route_id = ?"

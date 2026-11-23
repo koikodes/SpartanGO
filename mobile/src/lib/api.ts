@@ -53,6 +53,7 @@ export const api = {
   requestRide: (b: { route_id: string; pickup_stop_id: string; dropoff_stop_id: string; note?: string }) => post<Ride>('/rides', b),
   myRides: () => request<Ride[]>('/rides/mine'),
   rideQueue: () => request<Ride[]>('/rides/queue'),
+  rideHistory: () => request<Ride[]>('/rides/history'),
   updateRide: (id: number, status: RideStatus) =>
     request<Ride>(`/rides/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 

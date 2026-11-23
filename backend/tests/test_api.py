@@ -103,6 +103,31 @@ def test_ride_request_flow(client):
     assert client.patch(f"/rides/{ride['id']}", json={"status": "pending"}, headers=driver).status_code == 400
 
 
+def test_on_board_ride_stays_in_queue_then_moves_to_history(client):
+    student = signup(client)
+    make_user("driver@nsu.edu", "driver")
+    driver = login(client, "driver@nsu.edu")
+    body = {"route_id": "campus-loop", "pickup_stop_id": "library", "dropoff_stop_id": "dining-hall"}
+    ride = client.post("/rides", json=body, headers=student).json()
+    for s in ["accepted", "picked_up"]:
+        client.patch(f"/rides/{ride['id']}", json={"status": s}, headers=driver)
+
+    # on board: the driver still sees it (to tap "Dropped off") and the student can't double-book
+    assert [r["status"] for r in client.get("/rides/queue", headers=driver).json()] == ["picked_up"]
+    assert client.post("/rides", json=body, headers=student).status_code == 409
+    assert client.get("/rides/history", headers=student).json() == []
+
+    # dropped off: leaves the queue, shows in history, and the student can request again
+    client.patch(f"/rides/{ride['id']}", json={"status": "completed"}, headers=driver)
+    assert client.get("/rides/queue", headers=driver).json() == []
+    assert [r["id"] for r in client.get("/rides/history", headers=student).json()] == [ride["id"]]
+    assert client.post("/rides", json=body, headers=student).status_code == 201
+
+    # students only see their own history
+    other = signup(client, "other@spartans.nsu.edu")
+    assert client.get("/rides/history", headers=other).json() == []
+
+
 def test_qr_pass_valid_once_and_tamper_proof(client):
     student = signup(client)
     make_user("driver@nsu.edu", "driver")

@@ -7,10 +7,16 @@ import type { Ride, RideStatus } from '@/lib/types';
 import { usePolling } from '@/lib/usePolling';
 import { stopName, useRoutes } from '@/lib/useRoutes';
 
+const STATUS: Partial<Record<RideStatus, string>> = {
+  pending: 'Waiting',
+  accepted: 'Accepted · heading to pickup',
+  picked_up: 'On board',
+};
+
 const NEXT: Partial<Record<RideStatus, { to: RideStatus; label: string }>> = {
   pending: { to: 'accepted', label: 'Accept' },
   accepted: { to: 'picked_up', label: 'Picked up' },
-  picked_up: { to: 'completed', label: 'Drop off' },
+  picked_up: { to: 'completed', label: 'Dropped off' },
 };
 
 export default function RideQueue() {
@@ -34,7 +40,7 @@ export default function RideQueue() {
         ListEmptyComponent={<Text style={[text.muted, { textAlign: 'center', marginTop: space.xl }]}>No ride requests right now.</Text>}
         renderItem={({ item }) => (
           <Card>
-            <Text style={text.muted}>#{item.id} · {routes?.find((r) => r.id === item.route_id)?.name}</Text>
+            <Text style={text.muted}>#{item.id} · {routes?.find((r) => r.id === item.route_id)?.name} · {STATUS[item.status]}</Text>
             <Text style={[text.body, { fontWeight: '600' }]}>
               {stopName(routes, item.route_id, item.pickup_stop_id)} → {stopName(routes, item.route_id, item.dropoff_stop_id)}
             </Text>
