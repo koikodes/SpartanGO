@@ -1,4 +1,4 @@
-import type { Arrival, Pass, PassCheck, Ride, RideStatus, Role, Route, User, Vehicle } from './types';
+import type { Arrival, Pass, PassCheck, Ride, RideStatus, Role, Route, TrackerPing, User, Vehicle } from './types';
 
 // Set EXPO_PUBLIC_API_URL in mobile/.env. On a physical phone use your computer's LAN IP
 // (e.g. http://192.168.1.20:8000), not localhost.
@@ -33,6 +33,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     } catch {}
     throw new ApiError(res.status, msg);
   }
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
@@ -57,4 +58,8 @@ export const api = {
 
   pass: () => request<Pass>('/pass'),
   verifyPass: (token: string, vehicle_id?: string) => post<PassCheck>('/pass/verify', { token, vehicle_id }),
+
+  // Track tab: a driver/admin device on the shuttle reports its GPS (backend TRACKER_PROVIDER=device)
+  trackerPing: (b: TrackerPing) => post<Vehicle>('/tracker/ping', b),
+  trackerStop: (vehicle_id: string) => post<void>('/tracker/stop', { vehicle_id }),
 };

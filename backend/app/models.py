@@ -33,6 +33,21 @@ class Vehicle(BaseModel):
     updated_at: datetime
 
 
+class TrackerPingIn(BaseModel):
+    """One GPS fix from a tracking device riding a shuttle (TRACKER_PROVIDER=device)."""
+    vehicle_id: str = Field(min_length=1, max_length=40, pattern=r"^[A-Za-z0-9 _-]+$")
+    route_id: str
+    lat: float = Field(ge=-90, le=90)
+    lng: float = Field(ge=-180, le=180)
+    heading: Optional[float] = Field(None, ge=0, le=360)
+    speed_mps: Optional[float] = Field(None, ge=0, le=60)
+    accuracy_m: Optional[float] = Field(None, ge=0)
+
+
+class TrackerStopIn(BaseModel):
+    vehicle_id: str = Field(min_length=1, max_length=40)
+
+
 class Arrival(BaseModel):
     stop_id: str
     route_id: str

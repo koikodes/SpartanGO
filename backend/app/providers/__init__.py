@@ -17,4 +17,7 @@ def get_provider(routes) -> TrackerProvider:
     if name == "gtfs_rt":
         from .gtfs_rt import GtfsRealtimeProvider
         return GtfsRealtimeProvider.from_settings(settings)
+    if name == "device":
+        from .device import DeviceProvider
+        return DeviceProvider()
     raise ValueError(f"Unknown TRACKER_PROVIDER: {name!r}")

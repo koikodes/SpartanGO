@@ -37,6 +37,12 @@
         }
       ],
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "SpartanGO uses this device's location to show the shuttle it is riding on the live map."
+        }
+      ],
+      [
         "expo-notifications",
         {
           "color": "#007A53"

@@ -16,6 +16,16 @@ export interface Vehicle {
   updated_at: string;
 }
 
+export interface TrackerPing {
+  vehicle_id: string;
+  route_id: string;
+  lat: number;
+  lng: number;
+  heading?: number | null;
+  speed_mps?: number | null;
+  accuracy_m?: number | null;
+}
+
 export interface Arrival { stop_id: string; route_id: string; vehicle_id: string; eta_seconds: number }
 
 export interface User { id: number; email: string; name: string; role: Role }

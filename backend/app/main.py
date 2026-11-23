@@ -17,9 +17,11 @@ from .config import settings
 from .geo import eta_seconds
 from .models import (
     Arrival, LoginIn, PassOut, PassVerifyIn, PassVerifyOut, RideRequestIn, RideRequestOut,
-    RideStatus, RideStatusUpdate, Role, Route, SignupIn, TokenOut, UserOut, Vehicle,
+    RideStatus, RideStatusUpdate, Role, Route, SignupIn, TokenOut, TrackerPingIn, TrackerStopIn,
+    UserOut, Vehicle,
 )
 from .providers import get_provider
+from .providers.device import DeviceProvider
 from .security import (
     check_pass, create_access_token, current_user, hash_password, issue_pass,
     require_role, verify_password,
@@ -98,6 +100,31 @@ async def stop_arrivals(route_id: str, stop_id: str, limit: int = Query(3, ge=1,
         if eta is not None:
             arrivals.append(Arrival(stop_id=stop_id, route_id=route_id, vehicle_id=v.id, eta_seconds=eta))
     return sorted(arrivals, key=lambda a: a.eta_seconds)[:limit]
+
+
+# ---------------- tracking device on the shuttle (TRACKER_PROVIDER=device) ----------------
+
+def _device_provider() -> DeviceProvider:
+    if not isinstance(provider, DeviceProvider):
+        raise HTTPException(409, f"Device tracking is off. Set TRACKER_PROVIDER=device (now: {settings.tracker_provider}).")
+    return provider
+
+
+@app.post("/tracker/ping", response_model=Vehicle)
+def tracker_ping(body: TrackerPingIn, _: UserOut = Depends(require_role(Role.driver, Role.admin))):
+    """A driver/admin device riding the shuttle reports its GPS position."""
+    device = _device_provider()
+    _route_or_404(body.route_id)
+    vehicle = device.record(body)
+    _vehicle_cache["at"] = 0.0  # show the new position on the next app poll
+    return vehicle
+
+
+@app.post("/tracker/stop", status_code=204)
+def tracker_stop(body: TrackerStopIn, _: UserOut = Depends(require_role(Role.driver, Role.admin))):
+    """Take the shuttle off the map right away when tracking is stopped."""
+    _device_provider().stop(body.vehicle_id)
+    _vehicle_cache["at"] = 0.0
 
 
 # ---------------- accounts ----------------
