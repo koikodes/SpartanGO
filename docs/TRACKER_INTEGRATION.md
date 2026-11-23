@@ -53,6 +53,16 @@ Then restart the API. The app's map and arrival times switch from simulated to r
 | **B. Vendor's own API** | The vendor only has a proprietary API (key + JSON). | Copy `providers/transloc.py` (a template), match the vendor's field names, register it in `providers/__init__.py`. | 1–3 days |
 | **C. No access in time** | NSU can't share data this year, or there is no tracker. | Keep the **mock** provider for the demo (the proposal allows simulated data if it's clearly labeled), or add a driver-app GPS mode in CSC499 as a stretch. | Already works |
 
+### Device on the shuttle (`TRACKER_PROVIDER=device`)
+
+Use a phone or tablet as the shuttle's GPS while the Samsara feed is pending. The real drivers install nothing.
+
+1. In `backend/.env`, set `TRACKER_PROVIDER=device` and restart the API.
+2. On the tracking device (e.g. a cellular iPad), open SpartanGO in Expo Go and log in as a driver or admin account.
+3. Open the **Track** tab, pick the route, name the shuttle, tap **Start tracking**, and leave the screen open on a charger.
+
+The device posts to `POST /tracker/ping` every 5 seconds (driver/admin only). Only the latest position per shuttle is kept, in memory. A shuttle leaves the map when tracking stops or after 2 minutes without a ping. iOS pauses GPS when the screen locks, so the Track screen keeps the display awake. A Wi-Fi-only iPad has no GPS chip, so its position will be poor on a moving shuttle.
+
 ### GTFS-Realtime setup (no code)
 
 In `backend/.env`:

@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 @dataclass(frozen=True)
 class Settings:
     # Which live-location source to use: "mock" (simulated), "samsara" (NSU's fleet tracker),
-    # "gtfs_rt" (standard feed), or "transloc".
+    # "gtfs_rt" (standard feed), "transloc", or "device" (a phone/tablet on the shuttle
+    # sends its GPS from the driver app's Track tab).
     tracker_provider: str = os.getenv("TRACKER_PROVIDER", "mock")
     transloc_api_key: str = os.getenv("TRANSLOC_API_KEY", "")
     transloc_agency_id: str = os.getenv("TRANSLOC_AGENCY_ID", "")
