@@ -38,7 +38,7 @@ def login(client, email):
 
 def test_routes_and_vehicles(client):
     routes = client.get("/routes").json()
-    assert {r["id"] for r in routes} == {"campus-loop", "campus-connector"}
+    assert {r["id"] for r in routes} == {"campus-loop", "walmart", "proximity", "doubletree"}
     vehicles = client.get("/vehicles", params={"route_id": "campus-loop"}).json()
     assert len(vehicles) == 2 and all(v["route_id"] == "campus-loop" for v in vehicles)
 
@@ -54,7 +54,7 @@ def test_eta_on_loop_wraps_and_one_way_returns_none():
     at_stop1 = Vehicle(id="v", route_id=loop.id, lat=s1.lat, lng=s1.lng, updated_at="2026-01-01T00:00:00Z")
     assert eta_seconds(loop, at_stop1, s1.id, 6.7) == 0
     assert eta_seconds(loop, at_stop1, s0.id, 6.7) > 0  # must go around the loop
-    line = ROUTES_BY_ID["campus-connector"]
+    line = ROUTES_BY_ID["doubletree"]
     at_end = Vehicle(id="v", route_id=line.id, lat=line.stops[-1].lat, lng=line.stops[-1].lng, updated_at="2026-01-01T00:00:00Z")
     assert eta_seconds(line, at_end, line.stops[0].id, 6.7) is None
 
@@ -88,7 +88,7 @@ def test_ride_request_flow(client):
     make_user("driver@nsu.edu", "driver")
     driver = login(client, "driver@nsu.edu")
 
-    body = {"route_id": "campus-loop", "pickup_stop_id": "library", "dropoff_stop_id": "west-campus"}
+    body = {"route_id": "campus-loop", "pickup_stop_id": "library", "dropoff_stop_id": "dining-hall"}
     ride = client.post("/rides", json=body, headers=student).json()
     assert ride["status"] == "pending"
     assert client.post("/rides", json=body, headers=student).status_code == 409  # one open ride at a time

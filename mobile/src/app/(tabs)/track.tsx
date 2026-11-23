@@ -29,6 +29,8 @@ export default function TrackShuttle() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(0);
+  // shown so the team can stand at a stop and copy its exact coordinates into routes.json
+  const [position, setPosition] = useState<string | null>(null);
 
   const sub = useRef<Location.LocationSubscription | null>(null);
   const lastSent = useRef(0);
@@ -76,6 +78,7 @@ export default function TrackShuttle() {
           setSent((n) => n + 1);
           setError(null);
           setStatus(`Last sent ${new Date(now).toLocaleTimeString()} · accuracy ±${Math.round(coords.accuracy ?? 0)} m`);
+          setPosition(`${coords.latitude.toFixed(5)}, ${coords.longitude.toFixed(5)}`);
         } catch (e) {
           setError(e instanceof Error ? e.message : 'Could not send location');
         } finally {
@@ -123,6 +126,7 @@ export default function TrackShuttle() {
             {tracking ? `● Live · ${sent} updates sent` : 'Not tracking'}
           </Text>
           {status && <Text style={text.muted}>{status}</Text>}
+          {position && <Text selectable style={text.muted}>Position: {position}</Text>}
           <ErrorText>{error ?? routesError}</ErrorText>
         </Card>
 

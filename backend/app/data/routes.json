@@ -1,5 +1,5 @@
 {
-  "_note": "PLACEHOLDER DATA. Stop names and coordinates are approximate and must be replaced with NSU Transportation's official stop list and route shapes (or pulled from the tracking vendor's API).",
+  "_note": "Prototype routes (Nov 2026), from the team's annotated Google Maps screenshots. On-campus and off-campus shuttles are separate and do not share stops. Campus coordinates were measured from the map (checked against the stadium's published location, within ~5 m); stops marked \"approx\": true are still guesses. Replace any stop by standing at it with the Track tab running and copying the Position line. Keep stops in the order the shuttle visits them.",
   "routes": [
     {
       "id": "campus-loop",
@@ -7,23 +7,45 @@
       "color": "#007A53",
       "is_loop": true,
       "stops": [
-        {"id": "student-center", "name": "Student Center", "lat": 36.8487, "lng": -76.2609},
-        {"id": "library", "name": "Lyman Beecher Brooks Library", "lat": 36.8478, "lng": -76.2622},
-        {"id": "fine-arts", "name": "E.L. Hamm Fine Arts", "lat": 36.8466, "lng": -76.2636},
-        {"id": "west-campus", "name": "West Campus", "lat": 36.8452, "lng": -76.2668},
-        {"id": "east-campus", "name": "East Campus Housing", "lat": 36.8501, "lng": -76.2575}
+        {"id": "student-center", "name": "Mills E. Godwin Student Center", "lat": 36.84895, "lng": -76.26089},
+        {"id": "dining-hall", "name": "Dining Hall", "lat": 36.84850, "lng": -76.26140, "approx": true},
+        {"id": "new-residential", "name": "New Residential Hall", "lat": 36.85007, "lng": -76.25960},
+        {"id": "charles-smith", "name": "Charles H. Smith Hall", "lat": 36.84654, "lng": -76.25759},
+        {"id": "football-field", "name": "Dick Price Football Stadium", "lat": 36.84735, "lng": -76.26035},
+        {"id": "library", "name": "Lyman Beecher Brooks Library", "lat": 36.84728, "lng": -76.26464},
+        {"id": "fine-arts", "name": "E.L. Hamm Fine Arts / Wilder Performing Arts", "lat": 36.84737, "lng": -76.26842},
+        {"id": "woods-science", "name": "Woods Science Building", "lat": 36.84919, "lng": -76.26550, "approx": true},
+        {"id": "robinson-tech", "name": "Robinson Technology Center", "lat": 36.84943, "lng": -76.26394}
       ]
     },
     {
-      "id": "campus-connector",
-      "name": "Campus Connector (NSU - VHS - ODU)",
+      "id": "walmart",
+      "name": "Walmart Run (campus shuttle)",
+      "color": "#2E7D32",
+      "is_loop": false,
+      "stops": [
+        {"id": "student-center", "name": "Mills E. Godwin Student Center", "lat": 36.84895, "lng": -76.26089, "approx": true},
+        {"id": "walmart", "name": "Walmart Supercenter (1170 N Military Hwy)", "lat": 36.8583, "lng": -76.2085, "approx": true}
+      ]
+    },
+    {
+      "id": "proximity",
+      "name": "Proximity at ODU",
       "color": "#F2A900",
       "is_loop": false,
       "stops": [
-        {"id": "cc-fine-arts", "name": "E.L. Hamm Fine Arts (NSU)", "lat": 36.8466, "lng": -76.2636},
-        {"id": "cc-library", "name": "Brooks Library (NSU)", "lat": 36.8478, "lng": -76.2622},
-        {"id": "cc-lester", "name": "Lester Hall (VHS)", "lat": 36.8607, "lng": -76.3027},
-        {"id": "cc-perry", "name": "Perry Library / Lot 46 (ODU)", "lat": 36.8862, "lng": -76.3057}
+        {"id": "brown-hall", "name": "Brown Memorial Hall drop-off (NSU)", "lat": 36.84963, "lng": -76.26276},
+        {"id": "proximity", "name": "Proximity at ODU (1037 W 39th St)", "lat": 36.8797, "lng": -76.3010, "approx": true}
+      ]
+    },
+    {
+      "id": "doubletree",
+      "name": "DoubleTree Hotel",
+      "color": "#5E35B1",
+      "is_loop": false,
+      "stops": [
+        {"id": "brown-hall", "name": "Brown Memorial Hall drop-off (NSU)", "lat": 36.84963, "lng": -76.26276},
+        {"id": "doubletree", "name": "DoubleTree Norfolk Airport (1500 N Military Hwy)", "lat": 36.87562, "lng": -76.21062}
       ]
     }
   ]

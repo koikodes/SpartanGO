@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 
 import { Chip, ErrorText, text } from '@/components/ui';
 import { api } from '@/lib/api';
@@ -26,14 +26,6 @@ export default function LiveMap() {
   return (
     <View style={{ flex: 1 }}>
       <MapView style={StyleSheet.absoluteFill} initialRegion={NSU} showsUserLocation>
-        {shownRoutes.map((r) => (
-          <Polyline
-            key={r.id}
-            coordinates={[...r.stops, ...(r.is_loop ? [r.stops[0]] : [])].map((s) => ({ latitude: s.lat, longitude: s.lng }))}
-            strokeColor={r.color}
-            strokeWidth={4}
-          />
-        ))}
         {shownRoutes.flatMap((r) =>
           r.stops.map((s) => (
             <Marker key={`${r.id}-${s.id}`} coordinate={{ latitude: s.lat, longitude: s.lng }} title={s.name} description={r.name} pinColor={r.color} />

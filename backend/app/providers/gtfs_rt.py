@@ -8,7 +8,7 @@ this adapter connects to it with configuration only (no code changes):
     GTFS_RT_URL=https://<vendor>/.../vehiclepositions      # from NSU / the vendor
     GTFS_RT_API_KEY=...                                     # only if the feed needs one
     GTFS_RT_API_KEY_HEADER=x-api-key                        # header name the vendor expects
-    GTFS_RT_ROUTE_MAP={"4012345": "campus-loop", "4012346": "campus-connector"}
+    GTFS_RT_ROUTE_MAP={"4012345": "campus-loop", "4012346": "proximity"}
 
 GTFS_RT_ROUTE_MAP maps the vendor's route ids to SpartanGO route ids in data/routes.json.
 Vehicles on routes not in the map, without a position, or older than MAX_AGE_SECONDS
